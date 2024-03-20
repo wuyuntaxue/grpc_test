@@ -22,6 +22,7 @@
 
 static const char* RouteGuide_method_names[] = {
   "/RouteGuide/GetFeature",
+  "/RouteGuide/ListFeatures",
 };
 
 std::unique_ptr< RouteGuide::Stub> RouteGuide::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -32,6 +33,7 @@ std::unique_ptr< RouteGuide::Stub> RouteGuide::NewStub(const std::shared_ptr< ::
 
 RouteGuide::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_GetFeature_(RouteGuide_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListFeatures_(RouteGuide_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
 ::grpc::Status RouteGuide::Stub::GetFeature(::grpc::ClientContext* context, const ::Point& request, ::Feature* response) {
@@ -57,6 +59,22 @@ void RouteGuide::Stub::async::GetFeature(::grpc::ClientContext* context, const :
   return result;
 }
 
+::grpc::ClientReader< ::Feature>* RouteGuide::Stub::ListFeaturesRaw(::grpc::ClientContext* context, const ::Rectangle& request) {
+  return ::grpc::internal::ClientReaderFactory< ::Feature>::Create(channel_.get(), rpcmethod_ListFeatures_, context, request);
+}
+
+void RouteGuide::Stub::async::ListFeatures(::grpc::ClientContext* context, const ::Rectangle* request, ::grpc::ClientReadReactor< ::Feature>* reactor) {
+  ::grpc::internal::ClientCallbackReaderFactory< ::Feature>::Create(stub_->channel_.get(), stub_->rpcmethod_ListFeatures_, context, request, reactor);
+}
+
+::grpc::ClientAsyncReader< ::Feature>* RouteGuide::Stub::AsyncListFeaturesRaw(::grpc::ClientContext* context, const ::Rectangle& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::Feature>::Create(channel_.get(), cq, rpcmethod_ListFeatures_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::Feature>* RouteGuide::Stub::PrepareAsyncListFeaturesRaw(::grpc::ClientContext* context, const ::Rectangle& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::Feature>::Create(channel_.get(), cq, rpcmethod_ListFeatures_, context, request, false, nullptr);
+}
+
 RouteGuide::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       RouteGuide_method_names[0],
@@ -68,6 +86,16 @@ RouteGuide::Service::Service() {
              ::Feature* resp) {
                return service->GetFeature(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      RouteGuide_method_names[1],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< RouteGuide::Service, ::Rectangle, ::Feature>(
+          [](RouteGuide::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::Rectangle* req,
+             ::grpc::ServerWriter<::Feature>* writer) {
+               return service->ListFeatures(ctx, req, writer);
+             }, this)));
 }
 
 RouteGuide::Service::~Service() {
@@ -77,6 +105,13 @@ RouteGuide::Service::~Service() {
   (void) context;
   (void) request;
   (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status RouteGuide::Service::ListFeatures(::grpc::ServerContext* context, const ::Rectangle* request, ::grpc::ServerWriter< ::Feature>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

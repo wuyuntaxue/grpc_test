@@ -4,11 +4,18 @@
 
 #include <iostream>
 #include <string>
-
+#include <thread>
+#include <vector>
 
 class RouteGuideImpl : public RouteGuide::Service {
+public:
+    RouteGuideImpl() {
+        nameVec = {"zhao", "qian", "sun", "li", "zhou", "wu", "zheng", "wang"};
+    }
+
+public:
     /**
-     * @brief 需要实现的方法，
+     * @brief 需要实现的方法，简单RPC（客户端发起请求，服务端回复）
      *
      * @param context server上下文
      * @param request 客户端的请求，对应proto定义方法时的参数
@@ -22,8 +29,35 @@ class RouteGuideImpl : public RouteGuide::Service {
         return grpc::Status::OK;
     }
 
+    /**
+     * @brief 服务端流式RPC （客户端发起请求，服务端连续/多次回应，客户端连续读取，直至写入/读取完成）
+     *
+     * @param context 上下文
+     * @param request 客户端的请求
+     * @param writer writer模板对象，用于向客户端多次传输数据
+     * @return grpc::Status
+     */
+    virtual grpc::Status ListFeatures(grpc::ServerContext *context, const ::Rectangle *request,
+                                      grpc::ServerWriter<::Feature> *writer) {
+
+        std::cout << "request: {\n" << request->DebugString() << "}" << std::endl;
+        for (auto &name : nameVec) {
+            Feature res;
+            res.set_name(name);
+            res.mutable_location()->set_latitude(count);
+            res.mutable_location()->set_longitude(count);
+
+            writer->Write(res); // 写入
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            count++;
+        }
+        std::cout << "write done" << std::endl; // 写入完成
+        return grpc::Status::OK;
+    }
+
 private:
-    unsigned int count = 0;
+    unsigned int             count = 1;
+    std::vector<std::string> nameVec;
 };
 
 int main() {
