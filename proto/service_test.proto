@@ -30,4 +30,5 @@ message RouteSummary {
 service RouteGuide {
     rpc GetFeature(Point) returns (Feature) {}
     rpc ListFeatures(Rectangle) returns (stream Feature) {}
+    rpc RecordRoute(stream Point) returns (RouteSummary) {}
 }

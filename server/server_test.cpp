@@ -55,6 +55,27 @@ public:
         return grpc::Status::OK;
     }
 
+    /**
+     * @brief 客户端流式RPC （客户端发起连接，多次/连续发送请求，服务端连续读取，直至写入/读取完成）
+     *
+     * @param context
+     * @param reader reader模板对象，用来读取客户端发来的数据
+     * @param response 给客户端的回复
+     * @return grpc::Status
+     */
+    virtual grpc::Status RecordRoute(grpc::ServerContext *context, grpc::ServerReader<::Point> *reader,
+                                     ::RouteSummary *response) {
+        ::Point      pMsg;
+        unsigned int tmpCount = 0;
+        while (reader->Read(&pMsg)) {
+            std::cout << "read: {\n" << pMsg.DebugString() << "}" << std::endl;
+            tmpCount++;
+        }
+
+        response->set_point_count(tmpCount);
+        return grpc::Status::OK;
+    }
+
 private:
     unsigned int             count = 1;
     std::vector<std::string> nameVec;

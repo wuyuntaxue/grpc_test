@@ -3,6 +3,7 @@
 #include "service_test_message/service_test.pb.h"
 
 #include <iostream>
+#include <thread>
 
 class GrouteGuideClient {
 public:
@@ -54,6 +55,32 @@ public:
         }
     }
 
+    void TestRecordRoute() {
+        ::RouteSummary      summary; // 回复
+        grpc::ClientContext context; // 上下文
+
+        // 调用方法，得到writer
+        std::unique_ptr<grpc::ClientWriter<::Point>> writer = _stub->RecordRoute(&context, &summary);
+
+        for (int i = 0; i < 10; i++) {
+            ::Point tmpP;
+            tmpP.set_latitude(i);
+            tmpP.set_longitude(-i);
+
+            if (!writer->Write(tmpP)) {
+                std::cout << "write failed, " << i << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+
+        writer->WritesDone();  // 通知服务端发送完成
+        if (writer->Finish().ok()) { // 判断发送状态
+            std::cout << "write ok, respone: {\n" << summary.DebugString() << "}" << std::endl;
+        } else {
+            std::cout << "write failed" << std::endl;
+        }
+    }
+
 private:
     std::unique_ptr<RouteGuide::Stub> _stub;
 };
@@ -62,8 +89,11 @@ int main() {
     std::string address("0.0.0.0:50051");
     GrouteGuideClient client(grpc::CreateChannel(address, grpc::InsecureChannelCredentials())); // 创建通道
 
+    std::cout << "-------------------------" << std::endl;
     client.TestGetFeature();
     std::cout << "-------------------------" << std::endl;
     client.TestGetListFeature();
+    std::cout << "-------------------------" << std::endl;
+    client.TestRecordRoute();
     return 0;
 }
