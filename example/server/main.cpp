@@ -40,5 +40,3 @@ int main(int argc, char** argv)
 
     return 0;
 }
-
-// export LD_LIBRARY_PATH=/home/ssp/work/taxue/grpc_test/3rdparty/grpc-1.62.1/lib/

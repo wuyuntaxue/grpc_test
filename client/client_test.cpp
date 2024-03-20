@@ -1,21 +1,23 @@
-#include <iostream>
 #include "grpcpp/grpcpp.h"
 #include "service_test_message/service_test.grpc.pb.h"
 #include "service_test_message/service_test.pb.h"
 
+#include <iostream>
+
 class GrouteGuideClient {
 public:
-    GrouteGuideClient(std::shared_ptr<grpc::Channel> channel) : _stub(RouteGuide::NewStub(channel)) {}
+    GrouteGuideClient(std::shared_ptr<grpc::Channel> channel)
+        : _stub(RouteGuide::NewStub(channel)) {}
 
     void TestGetFeature() {
-        Point req;
+        Point   req;
         Feature rsp;
 
         req.set_latitude(32);
         req.set_longitude(47);
 
         grpc::ClientContext context;
-        grpc::Status status = _stub->GetFeature(&context, req, &rsp);
+        grpc::Status        status = _stub->GetFeature(&context, req, &rsp);
         if (status.ok()) {
             std::cout << "GetFeature ok" << std::endl;
             std::cout << rsp.DebugString() << std::endl;
@@ -29,7 +31,7 @@ private:
 };
 
 int main() {
-    std::string address("0.0.0.0:50051");
+    std::string       address("0.0.0.0:50051");
     GrouteGuideClient client(grpc::CreateChannel(address, grpc::InsecureChannelCredentials()));
 
     client.TestGetFeature();

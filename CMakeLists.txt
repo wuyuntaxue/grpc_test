@@ -12,9 +12,9 @@ link_directories("${PROJECT_SOURCE_DIR}/3rdparty/grpc-1.62.1/lib/")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -W -Werror=return-type -Wl,--copy-dt-needed-entries")
 
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/example/server)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/example/server)
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/example/client)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/example/client)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/server)
 
