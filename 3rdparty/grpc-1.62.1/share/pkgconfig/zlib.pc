@@ -1,0 +1,13 @@
+prefix=/home/ssp/work/tools/grpc-1.62.1
+exec_prefix=/home/ssp/work/tools/grpc-1.62.1
+libdir=/home/ssp/work/tools/grpc-1.62.1/lib
+sharedlibdir=/home/ssp/work/tools/grpc-1.62.1/lib
+includedir=/home/ssp/work/tools/grpc-1.62.1/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.3
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

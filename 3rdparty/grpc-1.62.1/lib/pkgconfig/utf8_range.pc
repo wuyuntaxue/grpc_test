@@ -1,0 +1,11 @@
+prefix=/home/ssp/work/tools/grpc-1.62.1
+exec_prefix=/home/ssp/work/tools/grpc-1.62.1
+libdir=/home/ssp/work/tools/grpc-1.62.1/lib
+includedir=/home/ssp/work/tools/grpc-1.62.1/include
+
+Name: UTF8 Range
+Description: Google's UTF8 Library
+Version: 1.0
+Requires: absl_strings
+Libs: -L${libdir} -lutf8_validity -lutf8_range -pthread
+Cflags: -I${includedir}
