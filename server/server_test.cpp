@@ -76,6 +76,46 @@ public:
         return grpc::Status::OK;
     }
 
+    /**
+     * @brief 双向流
+     *
+     * @param context
+     * @param stream 读写流，读写的数据类型为其中的模板参数
+     * @return grpc::Status
+     */
+    virtual grpc::Status RouteChat(grpc::ServerContext                              *context,
+                                   grpc::ServerReaderWriter<::Feature, ::RouteNote> *stream) {
+
+        // 这里的逻辑是读到一次数据，向客户端发送两次数据
+        unsigned int tmpCount = 0;
+        RouteNote    readmsg;
+        while (stream->Read(&readmsg)) {
+            std::string rspMsg;
+            if (!readmsg.message().compare("hello")) {
+                std::cout << "read hello" << std::endl;
+            } else if (!readmsg.message().compare("test")) {
+                std::cout << "read test" << std::endl;
+            } else {
+                std::cout << "read other: " << readmsg.message() << std::endl;
+            }
+
+            rspMsg = "recv ";
+            rspMsg.append(readmsg.message()).append(", ");
+            rspMsg.append(std::to_string(tmpCount));
+
+            Feature feat;
+            feat.set_name(rspMsg + "a");
+            stream->Write(feat);
+
+            feat.set_name(rspMsg + "b");
+            stream->Write(feat);
+            tmpCount++;
+        }
+
+        std::cout << "stream read done" << std::endl;
+        return grpc::Status::OK;
+    }
+
 private:
     unsigned int             count = 1;
     std::vector<std::string> nameVec;

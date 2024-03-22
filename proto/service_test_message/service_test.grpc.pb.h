@@ -58,6 +58,15 @@ class RouteGuide final {
     std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::Point>> PrepareAsyncRecordRoute(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::Point>>(PrepareAsyncRecordRouteRaw(context, response, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::RouteNote, ::Feature>> RouteChat(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriterInterface< ::RouteNote, ::Feature>>(RouteChatRaw(context));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>> AsyncRouteChat(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>>(AsyncRouteChatRaw(context, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>> PrepareAsyncRouteChat(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>>(PrepareAsyncRouteChatRaw(context, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -65,6 +74,7 @@ class RouteGuide final {
       virtual void GetFeature(::grpc::ClientContext* context, const ::Point* request, ::Feature* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void ListFeatures(::grpc::ClientContext* context, const ::Rectangle* request, ::grpc::ClientReadReactor< ::Feature>* reactor) = 0;
       virtual void RecordRoute(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::ClientWriteReactor< ::Point>* reactor) = 0;
+      virtual void RouteChat(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::RouteNote,::Feature>* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -78,6 +88,9 @@ class RouteGuide final {
     virtual ::grpc::ClientWriterInterface< ::Point>* RecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response) = 0;
     virtual ::grpc::ClientAsyncWriterInterface< ::Point>* AsyncRecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncWriterInterface< ::Point>* PrepareAsyncRecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderWriterInterface< ::RouteNote, ::Feature>* RouteChatRaw(::grpc::ClientContext* context) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>* AsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderWriterInterface< ::RouteNote, ::Feature>* PrepareAsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -107,6 +120,15 @@ class RouteGuide final {
     std::unique_ptr< ::grpc::ClientAsyncWriter< ::Point>> PrepareAsyncRecordRoute(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncWriter< ::Point>>(PrepareAsyncRecordRouteRaw(context, response, cq));
     }
+    std::unique_ptr< ::grpc::ClientReaderWriter< ::RouteNote, ::Feature>> RouteChat(::grpc::ClientContext* context) {
+      return std::unique_ptr< ::grpc::ClientReaderWriter< ::RouteNote, ::Feature>>(RouteChatRaw(context));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>> AsyncRouteChat(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>>(AsyncRouteChatRaw(context, cq, tag));
+    }
+    std::unique_ptr<  ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>> PrepareAsyncRouteChat(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>>(PrepareAsyncRouteChatRaw(context, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -114,6 +136,7 @@ class RouteGuide final {
       void GetFeature(::grpc::ClientContext* context, const ::Point* request, ::Feature* response, ::grpc::ClientUnaryReactor* reactor) override;
       void ListFeatures(::grpc::ClientContext* context, const ::Rectangle* request, ::grpc::ClientReadReactor< ::Feature>* reactor) override;
       void RecordRoute(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::ClientWriteReactor< ::Point>* reactor) override;
+      void RouteChat(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::RouteNote,::Feature>* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -133,9 +156,13 @@ class RouteGuide final {
     ::grpc::ClientWriter< ::Point>* RecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response) override;
     ::grpc::ClientAsyncWriter< ::Point>* AsyncRecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncWriter< ::Point>* PrepareAsyncRecordRouteRaw(::grpc::ClientContext* context, ::RouteSummary* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReaderWriter< ::RouteNote, ::Feature>* RouteChatRaw(::grpc::ClientContext* context) override;
+    ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>* AsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>* PrepareAsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GetFeature_;
     const ::grpc::internal::RpcMethod rpcmethod_ListFeatures_;
     const ::grpc::internal::RpcMethod rpcmethod_RecordRoute_;
+    const ::grpc::internal::RpcMethod rpcmethod_RouteChat_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -146,6 +173,7 @@ class RouteGuide final {
     virtual ::grpc::Status GetFeature(::grpc::ServerContext* context, const ::Point* request, ::Feature* response);
     virtual ::grpc::Status ListFeatures(::grpc::ServerContext* context, const ::Rectangle* request, ::grpc::ServerWriter< ::Feature>* writer);
     virtual ::grpc::Status RecordRoute(::grpc::ServerContext* context, ::grpc::ServerReader< ::Point>* reader, ::RouteSummary* response);
+    virtual ::grpc::Status RouteChat(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* stream);
   };
   template <class BaseClass>
   class WithAsyncMethod_GetFeature : public BaseClass {
@@ -207,7 +235,27 @@ class RouteGuide final {
       ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GetFeature<WithAsyncMethod_ListFeatures<WithAsyncMethod_RecordRoute<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_RouteChat : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_RouteChat() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_RouteChat() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RouteChat(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRouteChat(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::Feature, ::RouteNote>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_GetFeature<WithAsyncMethod_ListFeatures<WithAsyncMethod_RecordRoute<WithAsyncMethod_RouteChat<Service > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_GetFeature : public BaseClass {
    private:
@@ -279,7 +327,30 @@ class RouteGuide final {
     virtual ::grpc::ServerReadReactor< ::Point>* RecordRoute(
       ::grpc::CallbackServerContext* /*context*/, ::RouteSummary* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<Service > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_RouteChat : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_RouteChat() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackBidiHandler< ::RouteNote, ::Feature>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->RouteChat(context); }));
+    }
+    ~WithCallbackMethod_RouteChat() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RouteChat(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::RouteNote, ::Feature>* RouteChat(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
+  };
+  typedef WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<WithCallbackMethod_RouteChat<Service > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GetFeature : public BaseClass {
@@ -328,6 +399,23 @@ class RouteGuide final {
     }
     // disable synchronous version of this method
     ::grpc::Status RecordRoute(::grpc::ServerContext* /*context*/, ::grpc::ServerReader< ::Point>* /*reader*/, ::RouteSummary* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_RouteChat : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_RouteChat() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_RouteChat() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RouteChat(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* /*stream*/)  override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -390,6 +478,26 @@ class RouteGuide final {
     }
     void RequestRecordRoute(::grpc::ServerContext* context, ::grpc::ServerAsyncReader< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* reader, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncClientStreaming(2, context, reader, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_RouteChat : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_RouteChat() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_RouteChat() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RouteChat(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRouteChat(::grpc::ServerContext* context, ::grpc::ServerAsyncReaderWriter< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* stream, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncBidiStreaming(3, context, stream, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -457,6 +565,29 @@ class RouteGuide final {
     }
     virtual ::grpc::ServerReadReactor< ::grpc::ByteBuffer>* RecordRoute(
       ::grpc::CallbackServerContext* /*context*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_RouteChat : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_RouteChat() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackBidiHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context) { return this->RouteChat(context); }));
+    }
+    ~WithRawCallbackMethod_RouteChat() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RouteChat(::grpc::ServerContext* /*context*/, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* /*stream*/)  override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerBidiReactor< ::grpc::ByteBuffer, ::grpc::ByteBuffer>* RouteChat(
+      ::grpc::CallbackServerContext* /*context*/)
+      { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_GetFeature : public BaseClass {

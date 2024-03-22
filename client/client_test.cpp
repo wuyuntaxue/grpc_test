@@ -73,12 +73,49 @@ public:
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
 
-        writer->WritesDone();  // 通知服务端发送完成
+        writer->WritesDone();        // 通知服务端发送完成
         if (writer->Finish().ok()) { // 判断发送状态
             std::cout << "write ok, respone: {\n" << summary.DebugString() << "}" << std::endl;
         } else {
             std::cout << "write failed" << std::endl;
         }
+    }
+
+    void TestRouteChat() {
+
+        grpc::ClientContext context;
+
+        std::unique_ptr<grpc::ClientReaderWriterInterface<::RouteNote, ::Feature>> stream =
+            _stub->RouteChat(&context);
+
+        std::thread th([&] {
+            Feature readmsg;
+            // 新建一个线程读取
+            while (stream->Read(&readmsg)) {
+                std::cout << "read: {\n" << readmsg.DebugString() << "}" << std::endl;
+            }
+        });
+
+        for (int i = 0; i < 10; i++) {
+            RouteNote notemsg;
+            if (i % 2 == 0) {
+                notemsg.set_message("hello");
+            } else {
+                notemsg.set_message("test");
+            }
+
+            stream->Write(notemsg);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        stream->WritesDone();        // 通知服务端结束
+        if (stream->Finish().ok()) { // 判断流的状态
+            std::cout << "write done" << std::endl;
+        } else {
+            std::cout << "stream finish failed" << std::endl;
+        }
+
+        th.join();
     }
 
 private:
@@ -89,11 +126,13 @@ int main() {
     std::string address("0.0.0.0:50051");
     GrouteGuideClient client(grpc::CreateChannel(address, grpc::InsecureChannelCredentials())); // 创建通道
 
-    std::cout << "-------------------------" << std::endl;
-    client.TestGetFeature();
-    std::cout << "-------------------------" << std::endl;
-    client.TestGetListFeature();
-    std::cout << "-------------------------" << std::endl;
-    client.TestRecordRoute();
+    // std::cout << "-------------------------" << std::endl;
+    // client.TestGetFeature();
+    // std::cout << "-------------------------" << std::endl;
+    // client.TestGetListFeature();
+    // std::cout << "-------------------------" << std::endl;
+    // client.TestRecordRoute();
+    // std::cout << "-------------------------" << std::endl;
+    client.TestRouteChat();
     return 0;
 }

@@ -218,16 +218,17 @@ const char descriptor_table_protodef_service_5ftest_2eproto[] PROTOBUF_SECTION_V
     "\0132\006.Point\022\017\n\007message\030\002 \001(\t\"b\n\014RouteSumma"
     "ry\022\023\n\013point_count\030\001 \001(\005\022\025\n\rfeature_count"
     "\030\002 \001(\005\022\020\n\010distance\030\003 \001(\005\022\024\n\014elapsed_time"
-    "\030\004 \001(\0052\202\001\n\nRouteGuide\022 \n\nGetFeature\022\006.Po"
+    "\030\004 \001(\0052\253\001\n\nRouteGuide\022 \n\nGetFeature\022\006.Po"
     "int\032\010.Feature\"\000\022(\n\014ListFeatures\022\n.Rectan"
     "gle\032\010.Feature\"\0000\001\022(\n\013RecordRoute\022\006.Point"
-    "\032\r.RouteSummary\"\000(\001b\006proto3"
+    "\032\r.RouteSummary\"\000(\001\022\'\n\tRouteChat\022\n.Route"
+    "Note\032\010.Feature\"\000(\0010\001b\006proto3"
 };
 static ::absl::once_flag descriptor_table_service_5ftest_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_service_5ftest_2eproto = {
     false,
     false,
-    467,
+    508,
     descriptor_table_protodef_service_5ftest_2eproto,
     "service_test.proto",
     &descriptor_table_service_5ftest_2eproto_once,

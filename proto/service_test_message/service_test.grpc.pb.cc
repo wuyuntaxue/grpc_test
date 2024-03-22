@@ -24,6 +24,7 @@ static const char* RouteGuide_method_names[] = {
   "/RouteGuide/GetFeature",
   "/RouteGuide/ListFeatures",
   "/RouteGuide/RecordRoute",
+  "/RouteGuide/RouteChat",
 };
 
 std::unique_ptr< RouteGuide::Stub> RouteGuide::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -36,6 +37,7 @@ RouteGuide::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel
   : channel_(channel), rpcmethod_GetFeature_(RouteGuide_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_ListFeatures_(RouteGuide_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_RecordRoute_(RouteGuide_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_RouteChat_(RouteGuide_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::BIDI_STREAMING, channel)
   {}
 
 ::grpc::Status RouteGuide::Stub::GetFeature(::grpc::ClientContext* context, const ::Point& request, ::Feature* response) {
@@ -93,6 +95,22 @@ void RouteGuide::Stub::async::RecordRoute(::grpc::ClientContext* context, ::Rout
   return ::grpc::internal::ClientAsyncWriterFactory< ::Point>::Create(channel_.get(), cq, rpcmethod_RecordRoute_, context, response, false, nullptr);
 }
 
+::grpc::ClientReaderWriter< ::RouteNote, ::Feature>* RouteGuide::Stub::RouteChatRaw(::grpc::ClientContext* context) {
+  return ::grpc::internal::ClientReaderWriterFactory< ::RouteNote, ::Feature>::Create(channel_.get(), rpcmethod_RouteChat_, context);
+}
+
+void RouteGuide::Stub::async::RouteChat(::grpc::ClientContext* context, ::grpc::ClientBidiReactor< ::RouteNote,::Feature>* reactor) {
+  ::grpc::internal::ClientCallbackReaderWriterFactory< ::RouteNote,::Feature>::Create(stub_->channel_.get(), stub_->rpcmethod_RouteChat_, context, reactor);
+}
+
+::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>* RouteGuide::Stub::AsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::RouteNote, ::Feature>::Create(channel_.get(), cq, rpcmethod_RouteChat_, context, true, tag);
+}
+
+::grpc::ClientAsyncReaderWriter< ::RouteNote, ::Feature>* RouteGuide::Stub::PrepareAsyncRouteChatRaw(::grpc::ClientContext* context, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderWriterFactory< ::RouteNote, ::Feature>::Create(channel_.get(), cq, rpcmethod_RouteChat_, context, false, nullptr);
+}
+
 RouteGuide::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       RouteGuide_method_names[0],
@@ -124,6 +142,16 @@ RouteGuide::Service::Service() {
              ::RouteSummary* resp) {
                return service->RecordRoute(ctx, reader, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      RouteGuide_method_names[3],
+      ::grpc::internal::RpcMethod::BIDI_STREAMING,
+      new ::grpc::internal::BidiStreamingHandler< RouteGuide::Service, ::RouteNote, ::Feature>(
+          [](RouteGuide::Service* service,
+             ::grpc::ServerContext* ctx,
+             ::grpc::ServerReaderWriter<::Feature,
+             ::RouteNote>* stream) {
+               return service->RouteChat(ctx, stream);
+             }, this)));
 }
 
 RouteGuide::Service::~Service() {
@@ -147,6 +175,12 @@ RouteGuide::Service::~Service() {
   (void) context;
   (void) reader;
   (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status RouteGuide::Service::RouteChat(::grpc::ServerContext* context, ::grpc::ServerReaderWriter< ::Feature, ::RouteNote>* stream) {
+  (void) context;
+  (void) stream;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
